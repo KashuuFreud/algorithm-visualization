@@ -6,7 +6,11 @@ function clearSVG(svg) {
 
 function createSVGElement(tag, attrs = {}) {
   const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
-  for (const key in attrs) el.setAttribute(key, attrs[key]);
+
+  for (const key in attrs) {
+    el.setAttribute(key, attrs[key]);
+  }
+
   return el;
 }
 
@@ -17,13 +21,27 @@ function getNodeColor(index, step) {
   if (step.done?.includes(index)) return "#34c759";
   if (step.pivot === index) return "#5856d6";
   if (step.pivotDone === index) return "#34c759";
+
   return "#e5e7eb";
+}
+
+function getTextColor(fill) {
+  if (fill === "#e5e7eb" || fill === "#ffd60a") {
+    return "#111827";
+  }
+
+  return "white";
+}
+
+function appendFadeGroup(svg, group) {
+  group.classList.add("fade-in");
+  svg.appendChild(group);
 }
 
 function drawHeap(svg, step) {
   clearSVG(svg);
 
-  const arr = step.array;
+  const arr = step.array || [];
   const positions = [
     [500, 62],
     [300, 150], [700, 150],
@@ -31,12 +49,16 @@ function drawHeap(svg, step) {
     [120, 370], [260, 370]
   ];
 
+  const edgeGroup = createSVGElement("g", {
+    class: "edge-layer"
+  });
+
   for (let i = 0; i < arr.length; i++) {
     const left = 2 * i + 1;
     const right = 2 * i + 2;
 
-    if (left < arr.length) {
-      svg.appendChild(createSVGElement("line", {
+    if (left < arr.length && positions[left]) {
+      edgeGroup.appendChild(createSVGElement("line", {
         x1: positions[i][0],
         y1: positions[i][1],
         x2: positions[left][0],
@@ -47,8 +69,8 @@ function drawHeap(svg, step) {
       }));
     }
 
-    if (right < arr.length) {
-      svg.appendChild(createSVGElement("line", {
+    if (right < arr.length && positions[right]) {
+      edgeGroup.appendChild(createSVGElement("line", {
         x1: positions[i][0],
         y1: positions[i][1],
         x2: positions[right][0],
@@ -60,53 +82,89 @@ function drawHeap(svg, step) {
     }
   }
 
+  svg.appendChild(edgeGroup);
+
+  const nodeGroup = createSVGElement("g", {
+    class: "node-layer"
+  });
+
   for (let i = 0; i < arr.length; i++) {
+    if (!positions[i]) continue;
+
     const [x, y] = positions[i];
     const fill = getNodeColor(i, step);
 
-    svg.appendChild(createSVGElement("circle", {
-      cx: x,
-      cy: y,
+    const group = createSVGElement("g", {
+      class: "heap-node-group",
+      transform: `translate(${x}, ${y})`
+    });
+
+    if (step.active?.includes(i)) {
+      group.classList.add("node-active");
+    }
+
+    if (step.compare?.includes(i)) {
+      group.classList.add("node-compare");
+    }
+
+    if (step.swap?.includes(i)) {
+      group.classList.add("node-swap");
+    }
+
+    const circle = createSVGElement("circle", {
+      class: "node-circle",
+      cx: 0,
+      cy: 0,
       r: 32,
       fill,
       stroke: "white",
       "stroke-width": 5
-    }));
+    });
 
     const text = createSVGElement("text", {
-      x,
-      y: y + 7,
+      class: "node-value",
+      x: 0,
+      y: 7,
       "text-anchor": "middle",
       "font-size": 19,
       "font-weight": 800,
-      fill: fill === "#e5e7eb" || fill === "#ffd60a" ? "#111827" : "white"
+      fill: getTextColor(fill)
     });
 
     text.textContent = arr[i];
-    svg.appendChild(text);
 
     const indexText = createSVGElement("text", {
-      x,
-      y: y + 52,
+      x: 0,
+      y: 52,
       "text-anchor": "middle",
       "font-size": 12,
       fill: "#9ca3af"
     });
 
     indexText.textContent = `idx ${i}`;
-    svg.appendChild(indexText);
+
+    group.appendChild(circle);
+    group.appendChild(text);
+    group.appendChild(indexText);
+    nodeGroup.appendChild(group);
   }
+
+  appendFadeGroup(svg, nodeGroup);
 }
 
 function drawQuickSort(svg, step) {
   clearSVG(svg);
 
-  const arr = step.array;
+  const arr = step.array || [];
   const maxValue = Math.max(...arr.map((v) => Math.abs(v)), 1);
   const width = Math.min(70, 760 / arr.length);
   const gap = 16;
   const baseY = 380;
   const startX = 80;
+
+  const barGroup = createSVGElement("g", {
+    class: "bar-layer"
+  });
 
   for (let i = 0; i < arr.length; i++) {
     const x = startX + i * (width + gap);
@@ -114,7 +172,28 @@ function drawQuickSort(svg, step) {
     const y = baseY - barHeight;
     const fill = getNodeColor(i, step);
 
-    svg.appendChild(createSVGElement("rect", {
+    const group = createSVGElement("g", {
+      class: "bar-group"
+    });
+
+    if (step.active?.includes(i)) {
+      group.classList.add("node-active");
+    }
+
+    if (step.compare?.includes(i)) {
+      group.classList.add("node-compare");
+    }
+
+    if (step.swap?.includes(i)) {
+      group.classList.add("node-swap");
+    }
+
+    if (step.pivot === i) {
+      group.classList.add("node-pivot");
+    }
+
+    const rect = createSVGElement("rect", {
+      class: "bar-rect",
       x,
       y,
       width,
@@ -123,9 +202,10 @@ function drawQuickSort(svg, step) {
       fill,
       stroke: "white",
       "stroke-width": 4
-    }));
+    });
 
     const valueText = createSVGElement("text", {
+      class: "node-value",
       x: x + width / 2,
       y: y - 10,
       "text-anchor": "middle",
@@ -135,7 +215,6 @@ function drawQuickSort(svg, step) {
     });
 
     valueText.textContent = arr[i];
-    svg.appendChild(valueText);
 
     const indexText = createSVGElement("text", {
       x: x + width / 2,
@@ -146,11 +225,22 @@ function drawQuickSort(svg, step) {
     });
 
     indexText.textContent = i;
-    svg.appendChild(indexText);
+
+    group.appendChild(rect);
+    group.appendChild(valueText);
+    group.appendChild(indexText);
+    barGroup.appendChild(group);
   }
+
+  appendFadeGroup(svg, barGroup);
 }
 
 function renderStep(svg, step) {
+  if (!step || !step.algorithm) {
+    clearSVG(svg);
+    return;
+  }
+
   if (step.algorithm === "heap") {
     drawHeap(svg, step);
   } else if (step.algorithm === "quicksort") {
