@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>算法可视化演示系统</title>
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+  <main class="app-shell">
+    <section class="hero-card">
+      <div class="hero-left">
+        <p class="eyebrow">Data Structure Visualizer</p>
+        <h1>算法可视化演示系统</h1>
+        <p class="subtitle">
+          基于 WebSocket 的实时算法步骤推送，支持堆创建与快速排序过程演示。
+        </p>
+      </div>
+
+      <div class="hero-badge">
+        <span>Socket Lab 7</span>
+        <strong>题目 10</strong>
+      </div>
+    </section>
+
+    <section class="layout-grid">
+      <aside class="glass-card control-card">
+        <h2>控制面板</h2>
+
+        <label class="form-label">算法类型</label>
+        <select id="algorithmSelect" class="ios-input">
+          <option value="heap">堆创建：输入 9 个整数</option>
+          <option value="quicksort">快速排序：输入至少 2 个整数</option>
+        </select>
+
+        <label class="form-label">输入数据</label>
+        <input
+          id="inputData"
+          class="ios-input"
+          type="text"
+          placeholder="20,15,8,10,5,7,6,2,9"
+        />
+
+        <label class="form-label">演示速度</label>
+        <select id="speedSelect" class="ios-input">
+          <option value="1500">慢速</option>
+          <option value="1000" selected>标准</option>
+          <option value="500">快速</option>
+        </select>
+
+        <div class="button-stack">
+          <button id="submitBtn" class="primary-btn">开始演示</button>
+
+          <div class="mini-buttons">
+            <button id="pauseBtn" class="secondary-btn" disabled>暂停</button>
+            <button id="resumeBtn" class="secondary-btn" disabled>继续</button>
+          </div>
+
+          <button id="resetBtn" class="danger-btn">重置</button>
+        </div>
+      </aside>
+
+      <section class="main-panel">
+        <div class="status-row">
+          <div class="glass-card status-card">
+            <p class="card-label">连接状态</p>
+            <p id="statusText" class="status-text">正在连接后端服务...</p>
+          </div>
+
+          <div class="glass-card status-card">
+            <p class="card-label">当前步骤</p>
+            <p id="stepText" class="status-text">尚未开始演示</p>
+          </div>
+        </div>
+
+        <div class="glass-card visual-card">
+          <div class="visual-header">
+            <div>
+              <p class="card-label">Visualization</p>
+              <h2>实时可视化区域</h2>
+            </div>
+
+            <div class="legend">
+              <span><i class="dot normal"></i>普通</span>
+              <span><i class="dot active"></i>当前</span>
+              <span><i class="dot compare"></i>比较</span>
+              <span><i class="dot swap"></i>交换</span>
+            </div>
+          </div>
+
+          <svg id="svgCanvas" viewBox="0 0 1000 460"></svg>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
