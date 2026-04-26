@@ -145,11 +145,19 @@ button {
   font-weight: 700;
   border-radius: 18px;
   padding: 14px 16px;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease,
+    background 0.18s ease;
 }
 
 button:hover:not(:disabled) {
   transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 button:disabled {
@@ -166,6 +174,10 @@ button:disabled {
 .secondary-btn {
   color: #111827;
   background: rgba(242, 242, 247, 0.95);
+}
+
+.secondary-btn:hover:not(:disabled) {
+  background: rgba(229, 231, 235, 0.95);
 }
 
 .danger-btn {
@@ -272,12 +284,123 @@ button:disabled {
   box-shadow: inset 0 0 0 1px rgba(229, 231, 235, 0.9);
 }
 
-.node-circle {
-  transition: all 0.35s ease;
+.node-circle,
+.bar-rect {
+  transition:
+    transform 0.45s ease,
+    fill 0.35s ease,
+    opacity 0.35s ease,
+    height 0.45s ease,
+    y 0.45s ease;
 }
 
-.bar-rect {
-  transition: all 0.35s ease;
+.heap-node-group,
+.bar-group {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.node-value {
+  transition:
+    transform 0.35s ease,
+    opacity 0.35s ease,
+    fill 0.35s ease;
+}
+
+.node-active {
+  animation: activePulse 0.55s ease;
+}
+
+.node-compare {
+  animation: compareShake 0.45s ease;
+}
+
+.node-swap {
+  animation: swapBounce 0.6s ease;
+}
+
+.node-pivot {
+  animation: pivotGlow 0.7s ease;
+}
+
+.fade-in {
+  animation: fadeIn 0.28s ease;
+}
+
+@keyframes activePulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.13);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes compareShake {
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-3px);
+  }
+
+  50% {
+    transform: translateX(3px);
+  }
+
+  75% {
+    transform: translateX(-2px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes swapBounce {
+  0% {
+    transform: scale(1) translateY(0);
+  }
+
+  45% {
+    transform: scale(1.18) translateY(-8px);
+  }
+
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pivotGlow {
+  0% {
+    filter: drop-shadow(0 0 0 rgba(88, 86, 214, 0));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 12px rgba(88, 86, 214, 0.45));
+  }
+
+  100% {
+    filter: drop-shadow(0 0 0 rgba(88, 86, 214, 0));
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 900px) {
